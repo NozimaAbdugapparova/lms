@@ -39,7 +39,7 @@ export class UsersService {
         if(existUser){
             throw new ConflictException("You are already registered. Go to login page to enter your account")
         }
-        let url = ""
+        let url: string | null =null
         if(file){
             const uploadResult = await this.cloudinaryService.uploadFile(file);
             url = uploadResult.url
@@ -51,7 +51,7 @@ export class UsersService {
                 fullName: payload.fullName,
                 phone: payload.phone,
                 password: hashPass,
-                image:url ?? null
+                image:url
             }
         })
 
@@ -97,7 +97,7 @@ export class UsersService {
             throw new ForbiddenException("You can not edit other's profile")
         }
 
-        let url = ""
+        let url: string | null =null
         if(file){
             const uploadResult = await this.cloudinaryService.uploadFile(file);
             url = uploadResult.url
