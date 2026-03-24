@@ -1,5 +1,8 @@
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'MENTOR', 'ASSISTANT', 'STUDENT');
+CREATE TYPE "UserRole" AS ENUM ('SUPERADMIN', 'ADMIN', 'MENTOR', 'ASSISTANT', 'STUDENT', 'USER');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('active', 'inactive');
 
 -- CreateEnum
 CREATE TYPE "CourseLevel" AS ENUM ('BEGINNER', 'PRE_INTERMEDIATE', 'INTERMEDIATE', 'UPPER_INTERMEDIATE', 'ADVANCED');
@@ -19,8 +22,9 @@ CREATE TABLE "User" (
     "fullName" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
-    "role" "UserRole" NOT NULL DEFAULT 'STUDENT',
+    "image" TEXT,
+    "role" "UserRole" NOT NULL DEFAULT 'USER',
+    "status" "Status" NOT NULL DEFAULT 'active',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -33,13 +37,13 @@ CREATE TABLE "MentorProfile" (
     "about" TEXT NOT NULL,
     "job" TEXT NOT NULL,
     "experience" INTEGER NOT NULL,
-    "email" TEXT NOT NULL,
-    "telegram" TEXT NOT NULL,
-    "instagram" TEXT NOT NULL,
-    "linkedin" TEXT NOT NULL,
-    "facebook" TEXT NOT NULL,
-    "github" TEXT NOT NULL,
-    "website" TEXT NOT NULL,
+    "email" TEXT,
+    "telegram" TEXT,
+    "instagram" TEXT,
+    "linkedin" TEXT,
+    "facebook" TEXT,
+    "github" TEXT,
+    "website" TEXT,
     "role" "UserRole" NOT NULL DEFAULT 'MENTOR',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -99,7 +103,7 @@ CREATE TABLE "Rating" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "course_id" INTEGER NOT NULL,
-    "comment" TEXT NOT NULL,
+    "comment" TEXT,
     "rate" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -113,7 +117,7 @@ CREATE TABLE "LastActivity" (
     "course_id" INTEGER NOT NULL,
     "sectionId" INTEGER NOT NULL,
     "lessonId" INTEGER NOT NULL,
-    "url" TEXT NOT NULL,
+    "url" TEXT,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "LastActivity_pkey" PRIMARY KEY ("id")
@@ -168,7 +172,7 @@ CREATE TABLE "Homework" (
     "id" SERIAL NOT NULL,
     "lesson_id" INTEGER NOT NULL,
     "task" TEXT NOT NULL,
-    "file" TEXT NOT NULL,
+    "file" TEXT,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -180,7 +184,7 @@ CREATE TABLE "HomeworkSubmission" (
     "id" SERIAL NOT NULL,
     "text" TEXT NOT NULL,
     "file" TEXT NOT NULL,
-    "reason" TEXT NOT NULL,
+    "reason" TEXT,
     "status" "HomeworkSubStatus" NOT NULL DEFAULT 'PENDING',
     "homework_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
@@ -237,7 +241,7 @@ CREATE TABLE "Question" (
     "user_id" INTEGER NOT NULL,
     "course_id" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
-    "file" TEXT NOT NULL,
+    "file" TEXT,
     "read" BOOLEAN NOT NULL DEFAULT false,
     "readAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -252,12 +256,15 @@ CREATE TABLE "QuestionAnswer" (
     "question_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
-    "file" TEXT NOT NULL,
+    "file" TEXT,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "QuestionAnswer_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
 
 -- AddForeignKey
 ALTER TABLE "MentorProfile" ADD CONSTRAINT "MentorProfile_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

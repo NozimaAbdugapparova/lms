@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { MentorProfileModule } from './modules/mentor-profile/mentor-profile.module';
 import { CourseModule } from './modules/course/course.module';
@@ -15,12 +15,24 @@ import { LessonViewModule } from './modules/lesson-view/lesson-view.module';
 import { LessonFileModule } from './modules/lesson-file/lesson-file.module';
 import { HomeworkModule } from './modules/homework/homework.module';
 import { PrismaModule } from './core/database/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { CloudinaryModule } from 'nestjs-cloudinary';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
         isGlobal: true
     }),
+    CloudinaryModule.forRootAsync({
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService : ConfigService)=> ({
+            cloud_name: configService.get<string>('CLOUD_NAME'),
+            api_key: configService.get<string>('CLOUDINARY_API_KEY'),
+            api_secret: configService.get<string>('CLOUDINARY_API_SECRET')
+        })
+    }),
+    AuthModule,
     UsersModule,
     MentorProfileModule,
     CourseModule,
@@ -34,7 +46,7 @@ import { PrismaModule } from './core/database/prisma.module';
     LessonViewModule,
     LessonFileModule,
     HomeworkModule,
-    PrismaModule
+    PrismaModule,
   ],
   providers: [RatingService],
 })

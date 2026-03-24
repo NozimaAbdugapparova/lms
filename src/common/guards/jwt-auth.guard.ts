@@ -7,7 +7,7 @@ export class AuthGuard implements CanActivate{
     async canActivate(context: ExecutionContext): Promise<boolean>{
         try {
             const req = context.switchToHttp().getRequest()
-            let token = req.headers.auhtorization
+            let token = req.headers.authorization
 
             if(!token) throw new UnauthorizedException()
 
@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate{
             req['user'] = user
             return true
         } catch (error) {
-            throw new UnauthorizedException()
+            throw new UnauthorizedException("I am here")
         }
     }
 }

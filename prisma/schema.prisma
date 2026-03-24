@@ -7,10 +7,17 @@ datasource db {
 }
 
 enum UserRole {
+    SUPERADMIN
     ADMIN
     MENTOR
     ASSISTANT
     STUDENT
+    USER
+}
+
+enum Status {
+    active
+    inactive
 }
 
 enum CourseLevel {
@@ -43,10 +50,11 @@ enum ExamAnswer {
 model User {
     id                  Int                  @id @default(autoincrement())
     fullName            String
-    phone               String
+    phone               String               @unique
     password            String
-    image               String
-    role                UserRole             @default(STUDENT)
+    image               String?
+    role                UserRole             @default(USER)
+    status              Status               @default(active)
     createdAt           DateTime             @default(now())
     mentorProfiles      MentorProfile[]
     assignedCourses     AssignedCourse[]
@@ -67,13 +75,13 @@ model MentorProfile {
     about      String
     job        String
     experience Int
-    email      String
-    telegram   String
-    instagram  String
-    linkedin   String
-    facebook   String
-    github     String
-    website    String
+    email      String?
+    telegram   String?
+    instagram  String?
+    linkedin   String?
+    facebook   String?
+    github     String?
+    website    String?
     role       UserRole @default(MENTOR)
     createdAt  DateTime @default(now())
 
@@ -138,7 +146,7 @@ model Rating {
     id         Int      @id @default(autoincrement())
     user_id    Int
     course_id  Int
-    comment    String
+    comment    String?
     rate       Int
     created_at DateTime @default(now())
 
@@ -152,7 +160,7 @@ model LastActivity {
     course_id  Int
     sectionId  Int
     lessonId   Int
-    url        String
+    url        String?
     updated_at DateTime @default(now())
 
     user    User          @relation(fields: [user_id], references: [id])
@@ -215,7 +223,7 @@ model Homework {
     id         Int      @id @default(autoincrement())
     lesson_id  Int
     task       String
-    file       String
+    file       String?
     updated_at DateTime @default(now())
     created_at DateTime @default(now())
 
@@ -227,7 +235,7 @@ model HomeworkSubmission {
     id          Int               @id @default(autoincrement())
     text        String
     file        String
-    reason      String
+    reason      String?
     status      HomeworkSubStatus @default(PENDING)
     homework_id Int
     user_id     Int
@@ -284,7 +292,7 @@ model Question {
     user_id    Int
     course_id  Int
     text       String
-    file       String
+    file       String?
     read       Boolean  @default(false)
     readAt     DateTime @default(now())
     updated_at DateTime @default(now())
@@ -300,7 +308,7 @@ model QuestionAnswer {
     question_id Int
     user_id     Int
     text        String
-    file        String
+    file        String?
     updated_at  DateTime @default(now())
     created_at  DateTime @default(now())
 
