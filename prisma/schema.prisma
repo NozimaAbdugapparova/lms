@@ -106,6 +106,7 @@ model Course {
     banner     String
     introVideo String
     level      CourseLevel
+    status Status @default(active)
     published  Boolean     @default(false)
     createdAt  DateTime    @default(now())
 
