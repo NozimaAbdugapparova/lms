@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseIntPipe, Post, Req, UnsupportedMediaTypeException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UnsupportedMediaTypeException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { CreateLessonDto } from './dto/create-lesson.dto';
@@ -14,6 +14,17 @@ import { UpdateLessonDto } from './dto/update-lesson.dto';
 @Controller('lesson')
 export class LessonController {
     constructor(private readonly lessonService : LessonService){}
+
+    @ApiOperation({
+        summary: 'Watching lesson, SUPERADMIN, ADMIN, MENTOR'
+    })
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.ASSISTANT, UserRole.STUDENT)
+    @Get('all')
+    getAllLessons(){
+        return this.lessonService.getAllLessons()
+    }
+
 
     @ApiOperation({
         summary: 'Creating lesson, SUPERADMIN, ADMIN, MENTOR'
@@ -79,13 +90,26 @@ export class LessonController {
     }))
     @UseGuards(AuthGuard, RoleGuard)
     @Roles(UserRole.SUPERADMIN, UserRole.ADMIN)
-    @Post('update/:id')
+    @Put('update/:id')
     updateLesson(
         @Param('id', ParseIntPipe) id: number,
         @Body() payload : UpdateLessonDto,
         @UploadedFile() video?: Express.Multer.File
     ){
         return this.lessonService.updateLesson(id, payload, video)
+    }
+
+
+    @ApiOperation({
+        summary: 'Deleting lesson, SUPERADMIN, ADMIN, MENTOR'
+    })
+    @UseGuards(AuthGuard, RoleGuard)
+    @Roles(UserRole.SUPERADMIN, UserRole.ADMIN)
+    @Delete('delete/:id')
+    deleteLesson(
+        @Param('id', ParseIntPipe) id: number
+    ){
+        return this.lessonService.deleteLesson(id)
     }
 
 }

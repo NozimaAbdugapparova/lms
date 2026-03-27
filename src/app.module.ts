@@ -30,7 +30,8 @@ import { RedisModule } from './core/redis/redis.module';
         useFactory: (configService : ConfigService)=> ({
             cloud_name: configService.get<string>('CLOUD_NAME'),
             api_key: configService.get<string>('CLOUDINARY_API_KEY'),
-            api_secret: configService.get<string>('CLOUDINARY_API_SECRET')
+            api_secret: configService.get<string>('CLOUDINARY_API_SECRET'),
+            resource_type: "auto"
         })
     }),
     AuthModule,

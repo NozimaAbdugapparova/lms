@@ -2,21 +2,17 @@ import { ApiProperty } from "@nestjs/swagger"
 import { Type } from "class-transformer"
 import { IsNumber, IsString } from "class-validator"
 
-export class CreateLessonDto {
-    @ApiProperty()
-    @IsString()
-    name : string
-
-    @ApiProperty()
-    @IsString()
-    about : string
-
+export class LessonFileDto {
     // @ApiProperty()
     // @IsString()
-    // video : string
+    // file : string
+
+    @ApiProperty()
+    @IsString()
+    note : string
 
     @ApiProperty()
     @Type(() => Number)
     @IsNumber()
-    sectionId : number
+    lessonId : number
 }

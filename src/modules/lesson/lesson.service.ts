@@ -42,7 +42,7 @@ export class LessonService {
             throw new ConflictException("Lesson is already exist")
         }
     
-        const videoUpload = await this.cloudinaryService.uploadFile(video)
+        const videoUpload = await this.cloudinaryService.uploadFile(video, {resource_type:"video"})
     
         const videoUrl = videoUpload.secure_url
     
@@ -74,6 +74,56 @@ export class LessonService {
     
         if(!existLesson){
             throw new ConflictException("Lesson does not exist exist")
+        }
+
+        let url: string | null = null
+        if(video){
+            const uploadResult = this.cloudinaryService.uploadFile(video, {resource_type: "video"})
+            url = (await uploadResult).secure_url
+        }
+
+        await this.prisma.lesson.update({
+            where:{id},
+            data:{
+                name:payload.name || existLesson.name,
+                about: payload.about || existLesson.about,
+                video:url ?? existLesson.video,
+                sectionId: payload.sectionId || existLesson.sectionId
+            }
+        })
+
+        return {
+            success: true,
+            message: "Lesson updated successfully"
+        }
+    }
+
+    async deleteLesson(id: number){
+        const existSection = await this.prisma.sectionLesson.findFirst({
+            where:{id}
+        })
+
+        if(!existSection){
+            throw new NotFoundException("Section is not found by this ID")
+        }
+
+        const existLesson = await this.prisma.lesson.findFirst({
+            where:{id}
+        })
+    
+        if(!existLesson){
+            throw new ConflictException("Lesson does not exist exist")
+        }
+
+
+        await this.prisma.lesson.delete({
+            where:{id}
+        })
+
+
+        return {
+            success: true,
+            message: "Lesson deleted successfully"
         }
     }
 }

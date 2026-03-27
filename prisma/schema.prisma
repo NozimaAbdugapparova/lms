@@ -106,7 +106,7 @@ model Course {
     banner     String
     introVideo String
     level      CourseLevel
-    status Status @default(active)
+    status     Status      @default(active)
     published  Boolean     @default(false)
     createdAt  DateTime    @default(now())
 
@@ -117,7 +117,6 @@ model Course {
     ratings          Rating[]
     lastActivities   LastActivity[]
     sectionLessons   SectionLesson[]
-    lessonViews      LessonView[]
     questions        Question[]
 }
 
@@ -198,16 +197,18 @@ model Lesson {
     lastActivities LastActivity[]
     lessonFiles    LessonFile[]
     homework       Homework[]
+    lessonViews    LessonView[]
 }
 
 model LessonView {
     id        Int     @id @default(autoincrement())
     user_id   Int
-    course_id Int
-    view      Boolean
+    lesson_id Int
+    view      Boolean @default(false)
 
-    user   User   @relation(fields: [user_id], references: [id])
-    course Course @relation(fields: [course_id], references: [id])
+    user     User    @relation(fields: [user_id], references: [id])
+    lesson   Lesson  @relation(fields: [lesson_id], references: [id])
+    courseId Int?
 }
 
 model LessonFile {

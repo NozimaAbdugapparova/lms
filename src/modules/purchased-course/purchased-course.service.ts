@@ -49,8 +49,15 @@ export class PurchasedCourseService {
         }
 
         if(payload.amount<Number(course.price)){
-            throw new BadRequestException("Paymnet amount is not enough")
+            throw new BadRequestException("Payment amount is not enough")
         }
+
+        await this.prisma.user.update({
+            where:{id:payload.user_id},
+            data:{
+                role:UserRole.STUDENT
+            }
+        })
 
         await this.prisma.purchasedCourse.create({
             data: {
@@ -69,7 +76,14 @@ export class PurchasedCourseService {
 
     async deletePurchase(id: number, currentUser:{id:number, role: UserRole}) {
         const purchase = await this.prisma.purchasedCourse.findUnique({
-            where: { id }
+            where: { id },
+            select:{
+                user:{
+                    select:{
+                        id: true
+                    }
+                }
+            }
         })
         if (!purchase) {
             throw new NotFoundException("Purchase record not found")
@@ -79,6 +93,13 @@ export class PurchasedCourseService {
         if(id!=currentUser.id && !havePermission.includes(currentUser.role)){
             throw new ForbiddenException("You dont have permission to this action")
         }
+
+        await this.prisma.user.update({
+            where:{id: purchase.user.id},
+            data:{
+                role:UserRole.USER
+            }
+        })
 
         await this.prisma.purchasedCourse.delete({
             where: { id }
