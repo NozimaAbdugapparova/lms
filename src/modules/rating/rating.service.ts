@@ -25,21 +25,34 @@ export class RatingService {
             throw new NotFoundException("Course not found")
         }
 
-        return this.prisma.rating.findMany({
-            where: { course_id: courseId },
-            include: { user: true }
+        const courseRating = await this.prisma.rating.findMany({
+            where: { course_id: courseId }
         })
+
+        const total = courseRating.reduce((acc, el) => acc + el.rate, 0)
+
+        return {
+            success: true,
+            totalRating: total,
+            data: courseRating
+        }
+
     }
 
     async getMyRatings(currentUser: { id: number, role: UserRole }) {
-        return this.prisma.rating.findMany({
-            where: { user_id: currentUser.id },
-            include: { course: true }
+        const myRatings = await this.prisma.rating.findMany({
+            where: { user_id: currentUser.id }
         })
+
+        return {
+            success: true,
+            data: myRatings
+        }
     }
 
     async createRating(payload: RatingDto, currentUser: { id: number, role: UserRole }) {
-        const course = await this.prisma.course.findUnique({
+        
+        const course = await this.prisma.course.findFirst({
             where: { id: payload.course_id }
         })
         if (!course) {
@@ -48,7 +61,7 @@ export class RatingService {
 
         const alreadyRated = await this.prisma.rating.findFirst({
             where: {
-                user_id: currentUser.id,
+                user_id: payload.user_id,
                 course_id: payload.course_id
             }
         })
@@ -56,9 +69,13 @@ export class RatingService {
             throw new BadRequestException("You have already rated this course")
         }
 
+        if(payload.user_id!=currentUser.id){
+            throw new ForbiddenException("You don't have access to this action")
+        }
+
         await this.prisma.rating.create({
             data: {
-                user_id: currentUser.id, 
+                user_id: payload.user_id, 
                 course_id: payload.course_id,
                 comment: payload.comment,
                 rate: payload.rate

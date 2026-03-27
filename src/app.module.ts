@@ -17,6 +17,7 @@ import { HomeworkModule } from './modules/homework/homework.module';
 import { PrismaModule } from './core/database/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CloudinaryModule } from 'nestjs-cloudinary';
+import { RedisModule } from './core/redis/redis.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { CloudinaryModule } from 'nestjs-cloudinary';
     LessonFileModule,
     HomeworkModule,
     PrismaModule,
+    RedisModule,
   ],
   providers: [RatingService],
 })

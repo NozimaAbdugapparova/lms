@@ -12,7 +12,9 @@ import { Roles } from 'src/common/decorators/role';
 export class RatingController {
     constructor(private readonly ratingService: RatingService) {}
 
-    @ApiOperation({ summary: 'Get all ratings - SUPERADMIN, ADMIN' })
+    @ApiOperation({ 
+        summary: 'Get all ratings - SUPERADMIN, ADMIN' 
+    })
     @UseGuards(AuthGuard, RoleGuard)
     @Roles(UserRole.SUPERADMIN, UserRole.ADMIN)
     @Get('all')
@@ -20,21 +22,31 @@ export class RatingController {
         return this.ratingService.getAllRating()
     }
 
-    @ApiOperation({ summary: 'Get ratings by course id' })
+    @ApiOperation({ 
+        summary: 'Get ratings by course id' 
+    })
     @UseGuards(AuthGuard)
     @Get('course/:courseId')
-    getByCourse(@Param('courseId', ParseIntPipe) courseId: number) {
+    getByCourse(
+        @Param('courseId', ParseIntPipe) courseId: number
+    ) {
         return this.ratingService.getByCourse(courseId)
     }
 
-    @ApiOperation({ summary: 'Get my ratings' })
+    @ApiOperation({ 
+        summary: 'Get my ratings' 
+    })
     @UseGuards(AuthGuard)
     @Get('my')
-    getMyRatings(@Req() req: Request) {
+    getMyRatings(
+        @Req() req: Request
+    ) {
         return this.ratingService.getMyRatings(req['user'])
     }
 
-    @ApiOperation({ summary: 'Create rating' })
+    @ApiOperation({ 
+        summary: 'Create rating' 
+    })
     @UseGuards(AuthGuard)
     @Post('create')
     createRating(
@@ -44,7 +56,9 @@ export class RatingController {
         return this.ratingService.createRating(payload, req['user'])
     }
 
-    @ApiOperation({ summary: 'Update rating' })
+    @ApiOperation({ 
+        summary: 'Update rating' 
+    })
     @UseGuards(AuthGuard)
     @Put('update/:id')
     updateRating(
@@ -55,7 +69,9 @@ export class RatingController {
         return this.ratingService.updateRating(id, payload, req['user'])
     }
 
-    @ApiOperation({ summary: 'Delete rating' })
+    @ApiOperation({ 
+        summary: 'Delete rating' 
+    })
     @UseGuards(AuthGuard)
     @Delete('delete/:id')
     deleteRating(
